@@ -30,122 +30,53 @@ static void glfw_error_callback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-
-
-
 #include <iostream>
-#include <stdlib.h>
-
-#include <vector>
 #include <sstream>
+#include <iomanip>
+#include <cstdlib>
+#include <stdlib.h>
+#include <stdio.h>
 
-#include <armadillo>
 
-#include<string>
-using namespace arma;
-using namespace std ;
-typedef struct {
+#include <math.h>
+#include "shader.hpp"
+#include <string.h>
 
-        double x;
-        double y;
-        double z;
-       
-} Sommet ;
-int t=50 ;
-
-// variables globales pour OpenGL
-bool mouseLeftDown;
-bool mouseRightDown;
-bool mouseMiddleDown;
-float mouseX, mouseY;
-float cameraAngleX;
-float cameraAngleY;
-float cameraDistance=0.;
-int n=1000000;
-Sommet point[1000000];
-Sommet point2[1000000];
-Sommet S1={-1,0,1};
-Sommet S2={1,0,0};
-Sommet S3={0,2,-1};
-Sommet Scourantr={0.5,0.5,1};
+// Include GLM
+#include "../glm/glm.hpp"
+#include "../glm/gtc/matrix_transform.hpp"
+using namespace glm;
+using namespace std;
 
 
 
-void calcules()
-{
-
-
-  
- 
-point[0]=Scourantr;
-point2[0]=Scourantr;
-  for(int i=1;i<n;i++)
-  {
-   int nrandom = rand() % 3 + 1;
-  // cout<<nrandom<<endl;;
-   if(nrandom==1)
-   {
-   point[i]={S1.x+ point[i-1].x/2,S1.y+point[i-1].y/2,S1.z+point[i-1].z/2};
-
-
-   point2[i]={(S1.x+ point2[i-1].x/2)+S1.x- point2[i-1].x,(S1.y+point2[i-1].y/2)+S1.y-point2[i-1].y,(S1.z+point2[i-1].z/2)+S1.z-point2[i-1].z};
-   }
-   else 
-    if(nrandom==2)
-    {
-   point[i]={S2.x+ point[i-1].x/2,S2.y+point[i-1].y/2,S2.z+point[i-1].z/2};
-   point2[i]={(S2.x+ point2[i-1].x/2)+S2.x- point2[i-1].x,(S2.y+point2[i-1].y/2)+S2.y-point2[i-1].y,(S2.z+point2[i-1].z/2)+S2.z-point2[i-1].z};
-    }
-   else 
-   {
-    point[i]={S3.x+ point[i-1].x/2,S3.y+point[i-1].y/2,S3.z+point[i-1].z/2};
-   point2[i]={(S3.x+ point2[i-1].x/2)+S3.x- point2[i-1].x,(S3.y+point2[i-1].y/2)+S3.y-point2[i-1].y,(S3.z+point2[i-1].z/2)+S3.z-point2[i-1].z};
-   }
-
-  }
 
 
 
-}
-
-void displayCourbe(void)
-{
-  for(int i=1;i<n;i++)
-  {
-   // cout<<point[i].x<<" "<<point[i].y<<" "<<point[i].z<<endl;
-   glBegin(GL_POINTS);
-   glColor3f(1.0,0.0,0.0);
-   glVertex3f(point[i].x,point[i].y,point[i].z);
-   glEnd();
-
-    glBegin(GL_POINTS);
-   glColor3f(0.0,1.0,0.0);
-   glVertex3f(point2[i].x,point2[i].y,point2[i].z);
-   //cout<<point2[i].x<<" "<<point2[i].y<<" "<<point2[i].z<<endl;
-   glEnd();
-  }
- }
- void affiche_repere(void)
-{
-  glBegin(GL_LINES);
-  glColor3f(1.0,0.0,0.0);
-  glVertex2f(0.,0.);
-  glVertex2f(1.,0.);
-  glEnd(); 
-
-	 glBegin(GL_LINES);
-  glColor3f(0.0,1.0,0.0);
-  glVertex2f(0.,0.);
-  glVertex2f(0.,1.);
-  glEnd(); 
-   glBegin(GL_LINES);
-  glColor3f(0.0,0.0,1.0);
-  glVertex3f(0.,0.,0.);
-  glVertex3f(0.,0.,1.);
-  glEnd(); 
 
 
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -222,8 +153,7 @@ int main(int, char**)
     bool show_demo_window = false;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
- srand (time(NULL));
-  calcules();
+
     // Main loop
 #ifdef __EMSCRIPTEN__
     // For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
@@ -245,6 +175,60 @@ int main(int, char**)
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+
+         {
+           static int  NB_R =40;
+           static int  NB_r= 20 ;
+            ImGui::Begin("Mon Gui");
+           
+            ImGui::Text("test d'affichage de Text  (%s) (%d)", IMGUI_VERSION, IMGUI_VERSION_NUM);
+    
+            ImGui::Spacing();// creer un espace entre les guis. on peut en mettre plusieur d'affiler.
+        
+            ImGui::BulletText("test d'affichage de bulletext");
+            ImGui::BulletText(
+            "Click and drag on lower corner to resize window\n"
+            "(double-click to auto fit window to its contents).");
+
+            ImGui::Indent();
+               ImGui::BulletText("indent");
+               ImGui::Indent();
+               ImGui::BulletText("indent()");
+            ImGui::Unindent();
+
+            ImGui::BulletText("unindebent");
+
+            ImGui::Separator();
+          
+        
+        
+            ImGui::SliderInt("NBR",&NB_R,5,100); // slider de int 
+
+            ImGui::SliderInt("NBr",&NB_r,5,100);
+
+            ImGui::SeparatorText("separator text ");
+
+            if (ImGui::CollapsingHeader("test CollapsingHeader"))
+              {
+
+                if (ImGui::TreeNode("Configuration"))
+                {
+
+                       ImGui::TreePop();
+                }
+        
+            
+              }
+              
+
+
+
+
+
+
+            ImGui::End(); 
+         }
+
 
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show_demo_window)
@@ -289,18 +273,10 @@ int main(int, char**)
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
         glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
-      
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-	affiche_repere();
-  displayCourbe();
-     
-   glFlush();
- 
         glfwSwapBuffers(window);
-
-       
     }
 #ifdef __EMSCRIPTEN__
     EMSCRIPTEN_MAINLOOP_END;
